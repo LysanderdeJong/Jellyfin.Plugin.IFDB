@@ -53,7 +53,10 @@ namespace Jellyfin.Plugin.Ifdb.Providers
             var query = Uri.EscapeDataString(searchInfo.Name ?? string.Empty);
             #pragma warning disable CA1863
             var searchUrl = string.Format(CultureInfo.InvariantCulture, Constants.IfdbSearchURL, query);
-            _logger.LogInformation("Fetching IFDB search results from {Url}", searchUrl);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Fetching IFDB search results from {Url}", searchUrl);
+            }
 
             try
             {
@@ -160,7 +163,10 @@ namespace Jellyfin.Plugin.Ifdb.Providers
             }
 
             var detailsUrl = string.Format(CultureInfo.InvariantCulture, Constants.IfdbMovieURL, id);
-            _logger.LogInformation("Fetching IFDB metadata for {Name} ({Url})", info.Name, detailsUrl);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Fetching IFDB metadata for {Name} ({Url})", info.Name, detailsUrl);
+            }
 
             try
             {

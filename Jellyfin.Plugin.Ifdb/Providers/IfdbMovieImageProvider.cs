@@ -12,9 +12,6 @@ using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Providers;
 using Microsoft.Extensions.Logging;
-using SixLabors.ImageSharp;
-// using SixLabors.ImageSharp.Metadata;
-// using SixLabors.ImageSharp.PixelFormats;
 
 namespace Jellyfin.Plugin.Ifdb.Providers
 {
@@ -73,7 +70,10 @@ namespace Jellyfin.Plugin.Ifdb.Providers
 
             #pragma warning disable CA1863
             var detailsUrl = string.Format(CultureInfo.InvariantCulture, Constants.IfdbMovieURL, id);
-            _logger.LogInformation("Fetching IFDB images for {Name} from {Url}", item.Name, detailsUrl);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Fetching IFDB images for {Name} from {Url}", item.Name, detailsUrl);
+            }
 
             try
             {
@@ -87,15 +87,11 @@ namespace Jellyfin.Plugin.Ifdb.Providers
 
                 if (!string.IsNullOrWhiteSpace(primaryUrl))
                 {
-                    var (primaryWidth, primaryHeight) = await GetImageDimensionsAsync(primaryUrl, cancellationToken).ConfigureAwait(false);
-
                     images.Add(new RemoteImageInfo
                     {
                         ProviderName = Name,
                         Url = primaryUrl,
                         Type = ImageType.Primary,
-                        Width = primaryWidth,
-                        Height = primaryHeight,
                         Language = "en",
                     });
                 }
@@ -105,15 +101,11 @@ namespace Jellyfin.Plugin.Ifdb.Providers
 
                 if (!string.IsNullOrWhiteSpace(thumbUrl))
                 {
-                    var (thumbWidth, thumbHeight) = await GetImageDimensionsAsync(thumbUrl, cancellationToken).ConfigureAwait(false);
-
                     images.Add(new RemoteImageInfo
                     {
                         ProviderName = Name,
                         Url = thumbUrl,
                         Type = ImageType.Thumb,
-                        Width = thumbWidth,
-                        Height = thumbHeight,
                         Language = "en",
                     });
                 }
@@ -131,24 +123,6 @@ namespace Jellyfin.Plugin.Ifdb.Providers
         public Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
             return _httpClientFactory.CreateClient(NamedClient.Default).GetAsync(new Uri(url), cancellationToken);
-        }
-
-        private async Task<(int Width, int Height)> GetImageDimensionsAsync(string url, CancellationToken cancellationToken)
-        {
-            try
-            {
-                var client = _httpClientFactory.CreateClient(NamedClient.Default);
-                using var stream = await client.GetStreamAsync(url, cancellationToken).ConfigureAwait(false);
-
-                // Use ImageSharp to load metadata without decoding entire image
-                using var image = await Image.LoadAsync(stream, cancellationToken).ConfigureAwait(false);
-                return (image.Width, image.Height);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Failed to read image dimensions from {Url}", url);
-                return (0, 0);
-            }
         }
     }
 }

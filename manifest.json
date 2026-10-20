@@ -4,9 +4,17 @@
         "name": "IFDB",
         "description": "Fetches metadata for fan edits from fanedit.org, including title, faneditor, genres, rating, and poster.\n",
         "overview": "Get movie metadata the Internet Fanedit Database (IFDB)",
-        "owner": "raetha",
+        "owner": "LysanderdeJong",
         "category": "Metadata",
         "versions": [
+            {
+                "version": "2.0.0.0",
+                "changelog": "Jellyfin 12 compatibility\n",
+                "targetAbi": "12.0.0.0",
+                "sourceUrl": "https://github.com/LysanderdeJong/Jellyfin.Plugin.IFDB/releases/download/v2.0.0.0/ifdb_2.0.0.0.zip",
+                "checksum": "bc76f6c1f1a9085bdc371034235d74eb",
+                "timestamp": "2026-10-20T06:11:06.000Z"
+            },
             {
                 "version": "1.10.11.0",
                 "changelog": "Initial release for Jellyfin 10.11\n",
